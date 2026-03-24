@@ -106,17 +106,17 @@
 </head>
 <body>
   <div class="card" id="mainCard">
-  <h1>Leave Anna a message 🎉</h1>
-  <p class="sub">Record a voice message and add a photo!</p>
+  <h1>Heja Anna 🎉</h1>
+  <p class="sub">Spela in ett röstmeddelande och lägg till ett foto till Anna på 50-årsdagen!</p>
 
-  <label for="nameInput">Your name</label>
-  <input id="nameInput" type="text" placeholder="Your name" />
+  <label for="nameInput">Ditt namn</label>
+  <input id="nameInput" type="text" placeholder="Ditt namn" />
 
   <!-- Photo -->
-  <div class="section-label">Photo <span style="color:#c0a090;font-size:0.8rem">(optional)</span></div>
+  <div class="section-label">Foto <span style="color:#c0a090;font-size:0.8rem">(valfritt)</span></div>
   <div class="photo-area" id="photoArea">
     <div class="placeholder" id="photoPlaceholder" onclick="document.getElementById('photoInput').click()">
-      <span>📷</span>Tap to add a photo
+      <span>📷</span>Tryck för att lägga till ett foto
     </div>
     <img id="photoPreview" style="display:none" onclick="document.getElementById('photoInput').click()" />
     <button class="remove-btn" id="removePhoto" style="display:none" title="Remove photo">✕</button>
@@ -126,14 +126,14 @@
   <!-- Recorder -->
   <div class="recorder">
     <button class="rec-btn" id="recBtn">🎙️</button>
-    <div class="rec-label" id="recLabel">Tap to start recording</div>
+    <div class="rec-label" id="recLabel">Tryck för att börja spela in</div>
     <div class="audio-preview" id="audioPreview">
       <audio id="audioPlayback" controls></audio>
       <button class="remove-audio" id="removeAudio" title="Remove recording">✕</button>
     </div>
   </div>
 
-  <button class="submit-btn" id="submitBtn" disabled>Send message 🎉</button>
+  <button class="submit-btn" id="submitBtn" disabled>Skicka meddelande 🎉</button>
   <div class="status" id="status"></div>
   </div>
 
@@ -144,7 +144,7 @@
   // Block access if code is missing or wrong
   const q = new URLSearchParams(window.location.search).get('q');
   if (q !== 'an50na') {
-    document.body.innerHTML = '<div style="text-align:center;margin-top:40vh;font-family:Georgia;color:#a08070">Invalid link.</div>';
+    document.body.innerHTML = '  <div style="text-align:center;margin-top:40vh;font-family:Georgia;color:#a08070">Ogiltig länk.</div>';
     throw new Error('invalid code');
   }
 
@@ -211,7 +211,7 @@
       mediaRecorder.start();
       recBtn.classList.add('recording');
       recBtn.textContent = '⏹️';
-      recLabel.textContent = 'Recording… tap to stop';
+      recLabel.textContent = 'Spelar in… tryck för att stoppa';
     } catch {
       recLabel.textContent = 'Microphone access denied.';
     }
@@ -222,7 +222,7 @@
     audioBlob = null;
     audioPlayback.src = '';
     audioPreview.style.display = 'none';
-    recLabel.textContent = 'Tap to start recording';
+    recLabel.textContent = 'Tryck för att börja spela in';
     checkReady();
   });
 
@@ -230,7 +230,7 @@
   submitBtn.addEventListener('click', async () => {
     submitBtn.disabled = true;
     status.className = 'status';
-    status.textContent = 'Uploading… please wait ⏳';
+    status.textContent = 'Laddar upp… vänta lite ⏳';
 
     const name = document.getElementById('nameInput').value.trim();
     const photoFile = photoInput.files[0];
@@ -262,12 +262,12 @@
       const json = JSON.parse(text);
       if (json.ok) {
         status.className = 'status ok';
-        status.textContent = '🎉 Message sent! Thank you!';
-        submitBtn.textContent = 'Sent ✓';
+        status.textContent = '🎉 Skickat! Tack så mycket!';
+        submitBtn.textContent = 'Skickat ✓';
       } else throw new Error(json.error);
     } catch {
       status.className = 'status err';
-      status.textContent = 'Something went wrong. Please try again.';
+      status.textContent = 'Något gick fel. Försök igen.';
       submitBtn.disabled = false;
     }
   });

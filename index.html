@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Leave a Message 💌</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Georgia', serif;
+    background: #fdf6ee;
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .card {
+    background: #fff; border-radius: 20px; padding: 36px 28px;
+    max-width: 420px; width: 100%;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08); text-align: center;
+  }
+  h1 { font-size: 1.6rem; color: #3d2c1e; margin-bottom: 6px; }
+  .sub { color: #a08070; font-size: 0.95rem; margin-bottom: 28px; }
+
+  label { display: block; text-align: left; font-size: 0.85rem; color: #7a6050; margin-bottom: 4px; }
+  input[type="text"] {
+    width: 100%; padding: 12px 14px;
+    border: 1.5px solid #e8d8cc; border-radius: 10px;
+    font-size: 1rem; color: #3d2c1e; background: #fdf6ee;
+    margin-bottom: 20px; outline: none;
+  }
+  input[type="text"]:focus { border-color: #c89a7b; }
+
+  /* Section headers */
+  .section-label {
+    text-align: left; font-size: 0.85rem; color: #7a6050; margin-bottom: 8px;
+  }
+
+  /* Photo */
+  .photo-area {
+    border: 2px dashed #e8d8cc; border-radius: 12px;
+    padding: 18px; margin-bottom: 20px; cursor: pointer;
+    transition: border-color 0.2s; position: relative;
+  }
+  .photo-area:hover { border-color: #c89a7b; }
+  .photo-area img { max-height: 160px; border-radius: 8px; display: block; margin: 0 auto; }
+  .placeholder { color: #c0a090; font-size: 0.9rem; }
+  .placeholder span { font-size: 2rem; display: block; margin-bottom: 6px; }
+  #photoInput { display: none; }
+  .remove-btn {
+    position: absolute; top: 8px; right: 8px;
+    background: rgba(255,255,255,0.9); border: 1px solid #e8d8cc;
+    border-radius: 50%; width: 28px; height: 28px;
+    font-size: 0.85rem; cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    color: #c0392b; line-height: 1;
+  }
+  .remove-btn:hover { background: #fff; border-color: #c0392b; }
+
+  /* Recorder */
+  .recorder {
+    background: #fdf6ee; border-radius: 12px;
+    padding: 20px; margin-bottom: 24px;
+  }
+  .rec-btn {
+    width: 72px; height: 72px; border-radius: 50%;
+    border: none; font-size: 1.8rem; cursor: pointer;
+    background: #e85c50; color: #fff;
+    box-shadow: 0 4px 14px rgba(232,92,80,0.4);
+    transition: transform 0.1s, background 0.2s;
+  }
+  .rec-btn:active { transform: scale(0.95); }
+  .rec-btn.recording { background: #c0392b; animation: pulse 1s infinite; }
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 4px 14px rgba(192,57,43,0.4); }
+    50%      { box-shadow: 0 4px 24px rgba(192,57,43,0.7); }
+  }
+  .rec-label { font-size: 0.85rem; color: #a08070; margin-top: 10px; }
+
+  /* Audio preview */
+  .audio-preview {
+    margin-top: 14px; position: relative;
+    background: #fff; border: 1.5px solid #e8d8cc; border-radius: 10px;
+    padding: 10px 12px; display: none; align-items: center; gap: 10px;
+  }
+  .audio-preview audio { flex: 1; min-width: 0; }
+  .audio-preview .remove-audio {
+    flex-shrink: 0; background: none; border: none;
+    color: #c0392b; font-size: 1.1rem; cursor: pointer; padding: 4px;
+  }
+
+  /* Submit */
+  .submit-btn {
+    width: 100%; padding: 15px;
+    background: #3d2c1e; color: #fff;
+    border: none; border-radius: 12px;
+    font-size: 1rem; font-family: 'Georgia', serif;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .submit-btn:hover:not(:disabled) { background: #5a3e2b; }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .status { margin-top: 16px; font-size: 0.9rem; color: #a08070; min-height: 20px; }
+  .status.ok  { color: #5a9e6e; }
+  .status.err { color: #c0392b; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Leave us a message 💌</h1>
+  <p class="sub">Record a voice message and add a photo for the happy couple!</p>
+
+  <label for="nameInput">Your name</label>
+  <input id="nameInput" type="text" placeholder="Jane & John" />
+
+  <!-- Photo -->
+  <div class="section-label">Photo <span style="color:#c0a090;font-size:0.8rem">(optional)</span></div>
+  <div class="photo-area" id="photoArea">
+    <div class="placeholder" id="photoPlaceholder" onclick="document.getElementById('photoInput').click()">
+      <span>📷</span>Tap to add a photo
+    </div>
+    <img id="photoPreview" style="display:none" onclick="document.getElementById('photoInput').click()" />
+    <button class="remove-btn" id="removePhoto" style="display:none" title="Remove photo">✕</button>
+  </div>
+  <input type="file" id="photoInput" accept="image/*" capture="environment" />
+
+  <!-- Recorder -->
+  <div class="recorder">
+    <button class="rec-btn" id="recBtn">🎙️</button>
+    <div class="rec-label" id="recLabel">Tap to start recording</div>
+    <div class="audio-preview" id="audioPreview">
+      <audio id="audioPlayback" controls></audio>
+      <button class="remove-audio" id="removeAudio" title="Remove recording">✕</button>
+    </div>
+  </div>
+
+  <button class="submit-btn" id="submitBtn" disabled>Send message 💌</button>
+  <div class="status" id="status"></div>
+</div>
+
+<script>
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzDdo9Ff3YVjOEXhWB9MblXmxmE3-BvKigFuy4sTQ2GUJBE0lUbyE9oUXYt-VFocx8C/exec';
+  const submissionId = crypto.randomUUID(); // generated once per page load
+
+  let mediaRecorder, audioBlob, audioChunks = [];
+
+  const recBtn       = document.getElementById('recBtn');
+  const recLabel     = document.getElementById('recLabel');
+  const audioPreview = document.getElementById('audioPreview');
+  const audioPlayback= document.getElementById('audioPlayback');
+  const removeAudio  = document.getElementById('removeAudio');
+  const submitBtn    = document.getElementById('submitBtn');
+  const status       = document.getElementById('status');
+  const photoInput   = document.getElementById('photoInput');
+  const photoPreview = document.getElementById('photoPreview');
+  const photoPlaceholder = document.getElementById('photoPlaceholder');
+  const removePhoto  = document.getElementById('removePhoto');
+
+  function checkReady() {
+    const hasName = document.getElementById('nameInput').value.trim().length > 0;
+    submitBtn.disabled = !(hasName && audioBlob);
+  }
+  document.getElementById('nameInput').addEventListener('input', checkReady);
+
+  // --- Photo ---
+  photoInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    photoPreview.src = URL.createObjectURL(file);
+    photoPreview.style.display = 'block';
+    photoPlaceholder.style.display = 'none';
+    removePhoto.style.display = 'flex';
+  });
+
+  removePhoto.addEventListener('click', e => {
+    e.stopPropagation();
+    photoInput.value = '';
+    photoPreview.src = '';
+    photoPreview.style.display = 'none';
+    photoPlaceholder.style.display = '';
+    removePhoto.style.display = 'none';
+  });
+
+  // --- Recording ---
+  recBtn.addEventListener('click', async () => {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      mediaRecorder.stop();
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioChunks = [];
+      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+      mediaRecorder.onstop = () => {
+        audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        audioPlayback.src = URL.createObjectURL(audioBlob);
+        audioPreview.style.display = 'flex';
+        recLabel.textContent = 'Tap to re-record';
+        recBtn.classList.remove('recording');
+        recBtn.textContent = '🎙️';
+        stream.getTracks().forEach(t => t.stop());
+        checkReady();
+      };
+      mediaRecorder.start();
+      recBtn.classList.add('recording');
+      recBtn.textContent = '⏹️';
+      recLabel.textContent = 'Recording… tap to stop';
+    } catch {
+      recLabel.textContent = 'Microphone access denied.';
+    }
+  });
+
+  // Remove audio
+  removeAudio.addEventListener('click', () => {
+    audioBlob = null;
+    audioPlayback.src = '';
+    audioPreview.style.display = 'none';
+    recLabel.textContent = 'Tap to start recording';
+    checkReady();
+  });
+
+  // --- Submit ---
+  submitBtn.addEventListener('click', async () => {
+    submitBtn.disabled = true;
+    status.className = 'status';
+    status.textContent = 'Uploading… please wait ⏳';
+
+    const name = document.getElementById('nameInput').value.trim();
+    const photoFile = photoInput.files[0];
+
+    try {
+      const toBase64 = f => new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(r.result.split(',')[1]);
+        r.onerror = rej;
+        r.readAsDataURL(f);
+      });
+
+      const audioB64 = await toBase64(audioBlob);
+      const photoB64 = photoFile ? await toBase64(photoFile) : null;
+
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          id: submissionId,
+          name,
+          audio: audioB64, audioType: 'audio/webm',
+          photo: photoB64, photoType: photoFile?.type ?? null,
+        }),
+      });
+
+      const json = await res.json();
+      if (json.ok) {
+        status.className = 'status ok';
+        status.textContent = '🎉 Message sent! Thank you!';
+        submitBtn.textContent = 'Sent ✓';
+      } else throw new Error(json.error);
+    } catch {
+      status.className = 'status err';
+      status.textContent = 'Something went wrong. Please try again.';
+      submitBtn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>

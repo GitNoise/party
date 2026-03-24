@@ -105,12 +105,12 @@
 </style>
 </head>
 <body>
-<div class="card">
-  <h1>Leave us a message 💌</h1>
-  <p class="sub">Record a voice message and add a photo for the happy couple!</p>
+  <div class="card" id="mainCard">
+  <h1>Leave Anna a message 🎉</h1>
+  <p class="sub">Record a voice message and add a photo!</p>
 
   <label for="nameInput">Your name</label>
-  <input id="nameInput" type="text" placeholder="Jane & John" />
+  <input id="nameInput" type="text" placeholder="Your name" />
 
   <!-- Photo -->
   <div class="section-label">Photo <span style="color:#c0a090;font-size:0.8rem">(optional)</span></div>
@@ -133,13 +133,20 @@
     </div>
   </div>
 
-  <button class="submit-btn" id="submitBtn" disabled>Send message 💌</button>
+  <button class="submit-btn" id="submitBtn" disabled>Send message 🎉</button>
   <div class="status" id="status"></div>
-</div>
+  </div>
 
 <script>
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVjEi1_gPbabJ6rDVmjrJl64l3Lg9nEA7SiFI5WJ-ZqYW8RZBkQ0Y7-rhMsxW7FDE5ZQ/exec';
-  const submissionId = crypto.randomUUID(); // generated once per page load
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzDdo9Ff3YVjOEXhWB9MblXmxmE3-BvKigFuy4sTQ2GUJBE0lUbyE9oUXYt-VFocx8C/exec';
+  const submissionId = crypto.randomUUID();
+
+  // Block access if code is missing or wrong
+  const q = new URLSearchParams(window.location.search).get('q');
+  if (q !== 'an50na') {
+    document.body.innerHTML = '<div style="text-align:center;margin-top:40vh;font-family:Georgia;color:#a08070">Invalid link.</div>';
+    throw new Error('invalid code');
+  }
 
   let mediaRecorder, audioBlob, audioChunks = [];
 
@@ -244,6 +251,7 @@
         redirect: 'follow',
         body: JSON.stringify({
           id: submissionId,
+          q,
           name,
           audio: audioB64, audioType: 'audio/webm',
           photo: photoB64, photoType: photoFile?.type ?? null,

@@ -237,7 +237,7 @@
     </div>
 
     <div class="q-block">
-      <span class="q-label">Vad är ditt första minne av Anna?</span>
+      <span class="q-label">Var träffade du Anna?</span>
       <div class="options">
         <input class="opt" type="checkbox" id="q2a"><label for="q2a">En fest</label>
         <input class="opt" type="checkbox" id="q2b"><label for="q2b">Jobbet</label>
@@ -258,6 +258,19 @@
     </div>
 
     <div class="q-block">
+      <span class="q-label">Och hur skulle du beskriva Anna nu?</span>
+      <div class="options">
+        <input class="opt" type="checkbox" id="q3ba"><label for="q3ba">Rolig</label>
+        <input class="opt" type="checkbox" id="q3bb"><label for="q3bb">Bestämd</label>
+        <input class="opt" type="checkbox" id="q3bc"><label for="q3bc">Omtänksam</label>
+        <input class="opt" type="checkbox" id="q3bd"><label for="q3bd">Galen</label>
+        <input class="opt" type="checkbox" id="q3be"><label for="q3be">Vis</label>
+        <input class="opt" type="checkbox" id="q3bf"><label for="q3bf">Oförutsägbar</label>
+      </div>
+      <input class="annat-input" id="q3bother" placeholder="annat" />
+    </div>
+
+    <div class="q-block">
       <span class="q-label">Vad tror du Anna gör om 10 år?</span>
       <div class="options">
         <input class="opt" type="checkbox" id="q4a"><label for="q4a">Reser världen runt</label>
@@ -269,12 +282,13 @@
     </div>
 
     <div class="q-block">
-      <span class="q-label">Vilket äventyr hoppas du ni delar?</span>
+      <span class="q-label">Vad hoppas du att ni hittar på tillsammans?</span>
       <div class="options">
         <input class="opt" type="checkbox" id="q5a"><label for="q5a">En resa</label>
         <input class="opt" type="checkbox" id="q5b"><label for="q5b">En stor fest</label>
-        <input class="opt" type="checkbox" id="q5c"><label for="q5c">Ett projekt</label>
+        <input class="opt" type="checkbox" id="q5c"><label for="q5c">Något galet</label>
         <input class="opt" type="checkbox" id="q5d"><label for="q5d">Bara hänga</label>
+        <input class="opt" type="checkbox" id="q5e"><label for="q5e">Ta över världen</label>
       </div>
       <input class="annat-input" id="q5other" placeholder="annat" />
     </div>
@@ -406,18 +420,21 @@
   // --- Collect answers ---
   function getAnswers() {
     const qs = [
-      { label: 'Vilket år träffades ni?', ids: ['q1a','q1b','q1c','q1d','q1e'], other: 'q1other' },
-      { label: 'Vad är ditt första minne av Anna?', ids: ['q2a','q2b','q2c'], other: 'q2other' },
-      { label: 'Hur skulle du beskriva Anna när ni träffades?', ids: ['q3a','q3b','q3c','q3d'], other: 'q3other' },
-      { label: 'Vad tror du Anna gör om 10 år?', ids: ['q4a','q4b','q4c','q4d'], other: 'q4other' },
-      { label: 'Vilket äventyr hoppas du ni delar?', ids: ['q5a','q5b','q5c','q5d'], other: 'q5other' },
+      { key: 'q1', ids: ['q1a','q1b','q1c','q1d','q1e'], other: 'q1other' },
+      { key: 'q2', ids: ['q2a','q2b','q2c'], other: 'q2other' },
+      { key: 'q3', ids: ['q3a','q3b','q3c','q3d'], other: 'q3other' },
+      { key: 'q3b', ids: ['q3ba','q3bb','q3bc','q3bd','q3be','q3bf'], other: 'q3bother' },
+      { key: 'q4', ids: ['q4a','q4b','q4c','q4d'], other: 'q4other' },
+      { key: 'q5', ids: ['q5a','q5b','q5c','q5d','q5e'], other: 'q5other' },
     ];
-    return qs.map(({ label, ids, other }) => {
+    const result = {};
+    qs.forEach(({ key, ids, other }) => {
       const checked = ids.map(id => document.getElementById(id)).filter(el => el.checked).map(el => el.nextElementSibling.textContent);
       const otherVal = document.getElementById(other).value.trim();
       if (otherVal) checked.push(otherVal);
-      return checked.length ? `${label}: ${checked.join(', ')}` : null;
-    }).filter(Boolean).join('\n');
+      if (checked.length) result[key] = checked.join(', ');
+    });
+    return result;
   }
 
   // --- Submit ---

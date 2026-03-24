@@ -1,67 +1,496 @@
-const FOLDER_ID = '1m0hLR3esuX9a30YX7Ga0AkDGem2ycS9y';
-const INVITE_CODE = 'an50na';
-const SHEET_ID = '1G9tOLyBfAOXoVMH6VALmMINl_13vPNJOnn6zedzTv60';
-
-function doPost(e) {
-  try {
-    const data = JSON.parse(e.postData.contents);
-
-    if (data.q !== INVITE_CODE) {
-      return buildResponse({ ok: false, error: 'Invalid code' });
-    }
-
-    const folder = DriveApp.getFolderById(FOLDER_ID);
-    const id = data.id;
-    const safeName = data.name.replace(/[^a-z0-9]/gi, '_');
-    const prefix = `${id}_${safeName}`;
-
-    // Save audio
-    const audioBytes = Utilities.base64Decode(data.audio);
-    const audioBlob = Utilities.newBlob(audioBytes, data.audioType, `${prefix}_audio.webm`);
-    const audioFile = folder.createFile(audioBlob);
-    audioFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-    const audioLink = `https://drive.google.com/file/d/${audioFile.getId()}/view`;
-
-    // Save photo (if provided)
-    let photoLink = '—';
-    if (data.photo) {
-      const photoBytes = Utilities.base64Decode(data.photo);
-      const ext = data.photoType === 'image/png' ? 'png' : 'jpg';
-      const photoBlob = Utilities.newBlob(photoBytes, data.photoType, `${prefix}_photo.${ext}`);
-      const photoFile = folder.createFile(photoBlob);
-      photoFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-      photoLink = `https://drive.google.com/file/d/${photoFile.getId()}/view`;
-    }
-
-    // Log to sheet
-    const ss = SpreadsheetApp.openById(SHEET_ID);
-    const sheet = ss.getSheetByName('Submissions') || ss.insertSheet('Submissions');
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['ID', 'Timestamp', 'Name', 'Answers', 'Audio', 'Photo']);
-    }
-    sheet.appendRow([id, new Date(), data.name, data.answers || '—', audioLink, photoLink]);
-
-    return buildResponse({ ok: true });
-
-  } catch (err) {
-    return buildResponse({ ok: false, error: err.message });
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>Heja Anna 🎉</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #1a0533;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px);
+    background-size: 36px 36px;
+    min-height: 100vh;
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 24px 16px 48px;
   }
-}
+  .card {
+    background: #fff;
+    border: 4px solid #ff69b4;
+    max-width: 440px; width: 100%;
+    box-shadow: 6px 6px 0 #ff69b4, 12px 12px 0 #c084fc;
+  }
+  .card-header {
+    background: linear-gradient(90deg, #ff69b4, #c084fc, #38bdf8);
+    padding: 20px 20px 16px;
+    text-align: center;
+    border-bottom: 3px dashed #fff;
+  }
+  h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2.2rem; color: #fff;
+    text-shadow: 3px 3px 0 #7c3aed;
+    letter-spacing: 1px;
+  }
+  .marquee-wrap {
+    background: #1a0533; padding: 6px 0;
+    overflow: hidden; border-bottom: 2px solid #ff69b4;
+  }
+  .marquee-inner {
+    display: inline-block; white-space: nowrap;
+    animation: marquee 16s linear infinite;
+    color: #fde68a; font-size: 13px; letter-spacing: 1px;
+  }
+  @keyframes marquee { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
 
-function buildResponse(data) {
-  return ContentService
-    .createTextOutput(JSON.stringify(data))
-    .setMimeType(ContentService.MimeType.JSON);
-}
+  .card-body { padding: 20px 16px; background: #fef3ff; }
 
-function doGet(e) {
-  return buildResponse({ ok: true, msg: 'ready' });
-}
+  .prompt-text {
+    color: #7c3aed; font-size: 1rem; font-style: italic;
+    text-align: center; min-height: 26px;
+    transition: opacity 0.5s ease; margin-bottom: 18px;
+  }
+  .prompt-text.fade { opacity: 0; }
 
-function testSheet() {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  Logger.log('ss: ' + ss);
-  const sheet = ss.getSheetByName('Submissions') || ss.insertSheet('Submissions');
-  Logger.log('sheet: ' + sheet);
-  sheet.appendRow(['test', new Date(), 'Test Name', 'audio-link', 'photo-link']);
-}
+  .divider { text-align: center; color: #c084fc; font-size: 13px; letter-spacing: 3px; margin: 16px 0; }
+
+  .field-label {
+    display: block; font-size: 0.78rem; color: #7c3aed;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;
+  }
+  input[type="text"], .text-input {
+    width: 100%; padding: 12px 14px;
+    border: 2px solid #c084fc; border-radius: 0;
+    font-size: 16px; /* prevents iOS zoom */
+    color: #7c3aed; background: #fff;
+    margin-bottom: 16px;
+    font-family: 'Nunito', sans-serif; outline: none;
+    -webkit-appearance: none;
+  }
+  input[type="text"]::placeholder { font-style: italic; color: #c4b5fd; }
+  input[type="text"]:focus { border-color: #7c3aed; }
+
+  /* Action buttons side by side */
+  .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .action-btn {
+    background: #1a0533; border: 3px solid #ff69b4;
+    color: #fff; font-family: 'Fredoka One', cursive;
+    letter-spacing: 1px; cursor: pointer;
+    box-shadow: 3px 3px 0 #7c3aed;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 6px; padding: 22px 8px;
+    min-height: 110px;
+    -webkit-appearance: none;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .action-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #7c3aed; }
+  .action-btn.photo-btn { border-color: #c084fc; box-shadow: 3px 3px 0 #ff69b4; }
+  .action-btn.photo-btn:active { box-shadow: 1px 1px 0 #ff69b4; }
+  .action-btn .icon { font-size: 2rem; line-height: 1; }
+  .action-btn .lbl { font-size: 0.9rem; }
+  .action-btn .sub { font-size: 0.7rem; color: #fde68a; letter-spacing: 1px; font-family: 'Nunito', sans-serif; font-style: italic; }
+  .action-btn.recording { border-color: #fde68a; animation: pulse-btn 1s infinite; }
+  @keyframes pulse-btn {
+    0%,100% { box-shadow: 3px 3px 0 #7c3aed; }
+    50% { box-shadow: 3px 3px 12px #ff69b4; }
+  }
+
+  /* Audio preview */
+  .audio-preview {
+    background: #1a0533; border: 2px solid #c084fc;
+    padding: 10px 12px; margin-bottom: 12px;
+    display: none; align-items: center; gap: 10px;
+  }
+  .audio-preview audio { flex: 1; min-width: 0; height: 36px; }
+  .remove-btn {
+    background: none; border: none; color: #ff69b4;
+    font-size: 1.1rem; cursor: pointer; padding: 6px; flex-shrink: 0;
+  }
+
+  /* Photo preview */
+  .photo-preview-wrap {
+    position: relative; margin-bottom: 12px; display: none;
+  }
+  .photo-preview-wrap img { width: 100%; max-height: 180px; object-fit: cover; display: block; }
+  .photo-remove {
+    position: absolute; top: 6px; right: 6px;
+    background: rgba(26,5,51,0.85); border: 2px solid #ff69b4;
+    color: #fde68a; width: 32px; height: 32px;
+    border-radius: 0; font-size: 1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Questions */
+  .q-section-label {
+    font-size: 0.72rem; color: #a78bfa;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    text-align: center; margin-bottom: 14px;
+  }
+  .q-block { margin-bottom: 18px; }
+  .q-label {
+    font-size: 0.78rem; color: #7c3aed; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    margin-bottom: 8px; display: block;
+  }
+  .options { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 8px; }
+  .opt { display: none; }
+  .opt + label {
+    padding: 8px 14px;
+    border: 2px solid #c084fc; background: #fff;
+    color: #7c3aed; font-size: 0.82rem;
+    cursor: pointer; font-family: 'Nunito', sans-serif;
+    font-weight: 700; letter-spacing: 0.5px;
+    min-height: 44px; display: flex; align-items: center;
+    transition: all 0.1s;
+  }
+  .opt:checked + label { background: #7c3aed; color: #fde68a; border-color: #7c3aed; }
+  .annat-input {
+    width: 100%; padding: 10px 12px;
+    border: 2px solid #e8d4f8;
+    font-size: 16px; /* prevents iOS zoom */
+    color: #7c3aed; background: #fef3ff;
+    font-family: 'Nunito', sans-serif;
+    font-style: italic; outline: none;
+    -webkit-appearance: none;
+  }
+  .annat-input::placeholder { font-style: italic; color: #c4b5fd; }
+  .annat-input:focus { border-color: #c084fc; }
+
+  /* Submit */
+  .submit-btn {
+    width: 100%; padding: 16px;
+    background: linear-gradient(90deg, #ff69b4, #c084fc);
+    color: #fff; border: 3px solid #7c3aed;
+    font-size: 1.05rem; font-family: 'Fredoka One', cursive;
+    letter-spacing: 1px; cursor: not-allowed; opacity: 0.5;
+    box-shadow: 4px 4px 0 #7c3aed;
+    transition: transform 0.1s, box-shadow 0.1s, opacity 0.2s;
+    -webkit-appearance: none;
+  }
+  .submit-btn.ready { cursor: pointer; opacity: 1; }
+  .submit-btn.ready:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 #7c3aed; }
+
+  .status { margin-top: 14px; font-size: 0.9rem; text-align: center; min-height: 20px; color: #a78bfa; }
+  .status.ok { color: #5a9e6e; font-weight: 700; }
+  .status.err { color: #ff69b4; font-weight: 700; }
+
+  .visitor-count { text-align: center; font-size: 11px; color: #a78bfa; margin-top: 16px; letter-spacing: 1px; }
+  .hit-counter { display: inline-flex; gap: 2px; background: #1a0533; border: 1px solid #fde68a; padding: 3px 8px; }
+  .digit-col { display: inline-flex; flex-direction: column; height: 18px; overflow: hidden; }
+  .digit { font-family: monospace; font-size: 13px; color: #fde68a; line-height: 18px; height: 18px; transition: transform 0.15s ease-in-out; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card-header">
+    <h1>✨ Heja Anna! ✨</h1>
+  </div>
+  <div class="marquee-wrap">
+    <span class="marquee-inner">★ lämna ett meddelande till anna ★ spela in din röst ★ lägg till ett foto ★ anna fyller 50 ★ grattis anna ★&nbsp;&nbsp;&nbsp;</span>
+  </div>
+  <div class="card-body">
+    <div class="prompt-text" id="promptText"></div>
+
+    <span class="field-label">Ditt namn</span>
+    <input type="text" id="nameInput" placeholder="ditt namn..." />
+
+    <div class="action-row">
+      <button class="action-btn" id="recBtn">
+        <span class="icon" id="recIcon">🎙️</span>
+        <span class="lbl" id="recLbl">SPELA IN</span>
+        <span class="sub" id="recSub">tryck för att börja</span>
+      </button>
+      <button class="action-btn photo-btn" id="photoBtn">
+        <span class="icon" id="photoIcon">📷</span>
+        <span class="lbl">FOTO</span>
+        <span class="sub">valfritt</span>
+      </button>
+    </div>
+    <input type="file" id="photoInput" accept="image/*" capture="environment" style="display:none" />
+
+    <div class="audio-preview" id="audioPreview">
+      <audio id="audioPlayback" controls></audio>
+      <button class="remove-btn" id="removeAudio">✕</button>
+    </div>
+
+    <div class="photo-preview-wrap" id="photoPreviewWrap">
+      <img id="photoPreview" />
+      <button class="photo-remove" id="removePhoto">✕</button>
+    </div>
+
+    <div class="divider">✦ ✦ ✦</div>
+    <div class="q-section-label">några frågor (valfritt)</div>
+
+    <div class="q-block">
+      <span class="q-label">Vilket år träffades ni?</span>
+      <div class="options">
+        <input class="opt" type="checkbox" id="q1a"><label for="q1a">80-talet</label>
+        <input class="opt" type="checkbox" id="q1b"><label for="q1b">90-talet</label>
+        <input class="opt" type="checkbox" id="q1c"><label for="q1c">00-talet</label>
+        <input class="opt" type="checkbox" id="q1d"><label for="q1d">10-talet</label>
+        <input class="opt" type="checkbox" id="q1e"><label for="q1e">20-talet</label>
+      </div>
+      <input class="annat-input" id="q1other" placeholder="annat" />
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Vad är ditt första minne av Anna?</span>
+      <div class="options">
+        <input class="opt" type="checkbox" id="q2a"><label for="q2a">En fest</label>
+        <input class="opt" type="checkbox" id="q2b"><label for="q2b">Jobbet</label>
+        <input class="opt" type="checkbox" id="q2c"><label for="q2c">Skolan</label>
+      </div>
+      <input class="annat-input" id="q2other" placeholder="annat" />
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Hur skulle du beskriva Anna när ni träffades?</span>
+      <div class="options">
+        <input class="opt" type="checkbox" id="q3a"><label for="q3a">Rolig</label>
+        <input class="opt" type="checkbox" id="q3b"><label for="q3b">Bestämd</label>
+        <input class="opt" type="checkbox" id="q3c"><label for="q3c">Omtänksam</label>
+        <input class="opt" type="checkbox" id="q3d"><label for="q3d">Galen</label>
+      </div>
+      <input class="annat-input" id="q3other" placeholder="annat" />
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Vad tror du Anna gör om 10 år?</span>
+      <div class="options">
+        <input class="opt" type="checkbox" id="q4a"><label for="q4a">Reser världen runt</label>
+        <input class="opt" type="checkbox" id="q4b"><label for="q4b">Startar ett företag</label>
+        <input class="opt" type="checkbox" id="q4c"><label for="q4c">Njuter av livet</label>
+        <input class="opt" type="checkbox" id="q4d"><label for="q4d">Räddar världen</label>
+      </div>
+      <input class="annat-input" id="q4other" placeholder="annat" />
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Vilket äventyr hoppas du ni delar?</span>
+      <div class="options">
+        <input class="opt" type="checkbox" id="q5a"><label for="q5a">En resa</label>
+        <input class="opt" type="checkbox" id="q5b"><label for="q5b">En stor fest</label>
+        <input class="opt" type="checkbox" id="q5c"><label for="q5c">Ett projekt</label>
+        <input class="opt" type="checkbox" id="q5d"><label for="q5d">Bara hänga</label>
+      </div>
+      <input class="annat-input" id="q5other" placeholder="annat" />
+    </div>
+
+    <div class="divider">· · ·</div>
+    <button class="submit-btn" id="submitBtn">✉ SKICKA MEDDELANDE ✉</button>
+    <div class="status" id="status"></div>
+    <div class="visitor-count">besökare: <span class="hit-counter" id="counter"></span></div>
+  </div>
+</div>
+
+<script>
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVjEi1_gPbabJ6rDVmjrJl64l3Lg9nEA7SiFI5WJ-ZqYW8RZBkQ0Y7-rhMsxW7FDE5ZQ/exec';
+  const submissionId = crypto.randomUUID();
+  const q = new URLSearchParams(window.location.search).get('q');
+
+  // --- Prompts ---
+  const prompts = [
+    'Hur träffades ni första gången?',
+    'Berätta om ett minne du har med Anna',
+    'Beskriv Anna i tre ord',
+    'Vad har Anna lärt dig?',
+    'Vad är det roligaste du har upplevt med Anna?',
+    'Vad önskar du Anna för de nästa 50 åren?',
+  ];
+  for (let i = prompts.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [prompts[i], prompts[j]] = [prompts[j], prompts[i]];
+  }
+  let promptIdx = 0;
+  const promptEl = document.getElementById('promptText');
+  promptEl.textContent = prompts[0];
+  setInterval(() => {
+    promptEl.classList.add('fade');
+    setTimeout(() => {
+      promptIdx = (promptIdx + 1) % prompts.length;
+      promptEl.textContent = prompts[promptIdx];
+      promptEl.classList.remove('fade');
+    }, 500);
+  }, 4000);
+
+  // --- State ---
+  let audioBlob = null;
+  let mediaRecorder = null;
+  let audioChunks = [];
+
+  const recBtn      = document.getElementById('recBtn');
+  const recIcon     = document.getElementById('recIcon');
+  const recLbl      = document.getElementById('recLbl');
+  const recSub      = document.getElementById('recSub');
+  const audioPreview= document.getElementById('audioPreview');
+  const audioPlayback=document.getElementById('audioPlayback');
+  const removeAudio = document.getElementById('removeAudio');
+  const photoBtn    = document.getElementById('photoBtn');
+  const photoInput  = document.getElementById('photoInput');
+  const photoPreviewWrap = document.getElementById('photoPreviewWrap');
+  const photoPreview= document.getElementById('photoPreview');
+  const removePhoto = document.getElementById('removePhoto');
+  const submitBtn   = document.getElementById('submitBtn');
+  const status      = document.getElementById('status');
+
+  function checkReady() {
+    const hasName = document.getElementById('nameInput').value.trim().length > 0;
+    const ready = hasName && audioBlob;
+    submitBtn.classList.toggle('ready', ready);
+    submitBtn.disabled = !ready;
+  }
+  document.getElementById('nameInput').addEventListener('input', checkReady);
+
+  // --- Recording ---
+  recBtn.addEventListener('click', async () => {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      mediaRecorder.stop();
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioChunks = [];
+      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+      mediaRecorder.onstop = () => {
+        audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        audioPlayback.src = URL.createObjectURL(audioBlob);
+        audioPreview.style.display = 'flex';
+        recIcon.textContent = '🎙️';
+        recLbl.textContent = 'SPELA IN IGEN';
+        recSub.textContent = 'ersätter föregående';
+        recBtn.classList.remove('recording');
+        stream.getTracks().forEach(t => t.stop());
+        checkReady();
+      };
+      mediaRecorder.start();
+      recBtn.classList.add('recording');
+      recIcon.textContent = '⏹️';
+      recLbl.textContent = 'STOPPA';
+      recSub.textContent = 'spelar in...';
+    } catch {
+      recSub.textContent = 'mikrofonåtkomst nekad';
+    }
+  });
+
+  removeAudio.addEventListener('click', () => {
+    audioBlob = null;
+    audioPlayback.src = '';
+    audioPreview.style.display = 'none';
+    recIcon.textContent = '🎙️';
+    recLbl.textContent = 'SPELA IN';
+    recSub.textContent = 'tryck för att börja';
+    recBtn.classList.remove('recording');
+    checkReady();
+  });
+
+  // --- Photo ---
+  photoBtn.addEventListener('click', () => photoInput.click());
+  photoInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    photoPreview.src = URL.createObjectURL(file);
+    photoPreviewWrap.style.display = 'block';
+    document.getElementById('photoIcon').textContent = '✅';
+  });
+  removePhoto.addEventListener('click', () => {
+    photoInput.value = '';
+    photoPreview.src = '';
+    photoPreviewWrap.style.display = 'none';
+    document.getElementById('photoIcon').textContent = '📷';
+  });
+
+  // --- Collect answers ---
+  function getAnswers() {
+    const qs = [
+      { label: 'Vilket år träffades ni?', ids: ['q1a','q1b','q1c','q1d','q1e'], other: 'q1other' },
+      { label: 'Vad är ditt första minne av Anna?', ids: ['q2a','q2b','q2c'], other: 'q2other' },
+      { label: 'Hur skulle du beskriva Anna när ni träffades?', ids: ['q3a','q3b','q3c','q3d'], other: 'q3other' },
+      { label: 'Vad tror du Anna gör om 10 år?', ids: ['q4a','q4b','q4c','q4d'], other: 'q4other' },
+      { label: 'Vilket äventyr hoppas du ni delar?', ids: ['q5a','q5b','q5c','q5d'], other: 'q5other' },
+    ];
+    return qs.map(({ label, ids, other }) => {
+      const checked = ids.map(id => document.getElementById(id)).filter(el => el.checked).map(el => el.nextElementSibling.textContent);
+      const otherVal = document.getElementById(other).value.trim();
+      if (otherVal) checked.push(otherVal);
+      return checked.length ? `${label}: ${checked.join(', ')}` : null;
+    }).filter(Boolean).join('\n');
+  }
+
+  // --- Submit ---
+  submitBtn.addEventListener('click', async () => {
+    if (!audioBlob) return;
+    submitBtn.disabled = true;
+    submitBtn.classList.remove('ready');
+    status.className = 'status';
+    status.textContent = 'Laddar upp… vänta lite ⏳';
+
+    const name = document.getElementById('nameInput').value.trim();
+    const photoFile = photoInput.files[0];
+
+    try {
+      const toBase64 = f => new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(r.result.split(',')[1]);
+        r.onerror = rej;
+        r.readAsDataURL(f);
+      });
+
+      const audioB64 = await toBase64(audioBlob);
+      const photoB64 = photoFile ? await toBase64(photoFile) : null;
+      const answers  = getAnswers();
+
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        redirect: 'follow',
+        body: JSON.stringify({
+          id: submissionId, q,
+          name,
+          audio: audioB64, audioType: 'audio/webm',
+          photo: photoB64, photoType: photoFile?.type ?? null,
+          answers,
+        }),
+      });
+
+      const json = JSON.parse(await res.text());
+      if (json.ok) {
+        status.className = 'status ok';
+        status.textContent = '🎉 Skickat! Tack så mycket!';
+        submitBtn.textContent = '✓ SKICKAT';
+      } else throw new Error(json.error);
+    } catch {
+      status.className = 'status err';
+      status.textContent = 'Något gick fel. Försök igen.';
+      submitBtn.disabled = false;
+      submitBtn.classList.add('ready');
+    }
+  });
+
+  // --- Hit counter ---
+  const NUM_DIGITS = 7;
+  const counterEl = document.getElementById('counter');
+  const cols = [];
+  for (let i = 0; i < NUM_DIGITS; i++) {
+    const col = document.createElement('span'); col.className = 'digit-col';
+    const d = document.createElement('span'); d.className = 'digit'; d.textContent = Math.floor(Math.random() * 10);
+    col.appendChild(d); counterEl.appendChild(col); cols.push({ col, d });
+  }
+  function rollDigit(c) {
+    const next = Math.floor(Math.random() * 10);
+    const x = document.createElement('span'); x.className = 'digit'; x.textContent = next;
+    c.col.appendChild(x);
+    c.d.style.transform = 'translateY(-18px)'; x.style.transform = 'translateY(-18px)';
+    setTimeout(() => { c.col.removeChild(c.d); x.style.transform = ''; c.d = x; }, 160);
+  }
+  function tick() {
+    const n = Math.floor(Math.random() * 3) + 1;
+    [...Array(NUM_DIGITS).keys()].sort(() => Math.random() - .5).slice(0, n).forEach(i => rollDigit(cols[i]));
+    setTimeout(tick, 300 + Math.random() * 700);
+  }
+  setTimeout(tick, 800);
+</script>
+</body>
+</html>

@@ -16,16 +16,8 @@
     display: flex; align-items: flex-start; justify-content: center;
     padding: 24px 16px 48px;
   }
-  .card {
-    background: #fff; border: 4px solid #ff69b4;
-    max-width: 440px; width: 100%;
-    box-shadow: 6px 6px 0 #ff69b4, 12px 12px 0 #c084fc;
-  }
-  .card-header {
-    background: linear-gradient(90deg, #ff69b4, #c084fc, #38bdf8);
-    padding: 20px 20px 16px; text-align: center;
-    border-bottom: 3px dashed #fff;
-  }
+  .card { background: #fff; border: 4px solid #ff69b4; max-width: 440px; width: 100%; box-shadow: 6px 6px 0 #ff69b4, 12px 12px 0 #c084fc; }
+  .card-header { background: linear-gradient(90deg, #ff69b4, #c084fc, #38bdf8); padding: 20px 20px 16px; text-align: center; border-bottom: 3px dashed #fff; }
   h1 { font-family: 'Fredoka One', cursive; font-size: 2.2rem; color: #fff; text-shadow: 3px 3px 0 #7c3aed; letter-spacing: 1px; }
   .marquee-wrap { background: #1a0533; padding: 6px 0; overflow: hidden; border-bottom: 2px solid #ff69b4; }
   .marquee-inner { display: inline-block; white-space: nowrap; animation: marquee 16s linear infinite; color: #fde68a; font-size: 13px; letter-spacing: 1px; }
@@ -35,21 +27,22 @@
   .prompt-text.fade { opacity: 0; }
   .divider { text-align: center; color: #c084fc; font-size: 13px; letter-spacing: 3px; margin: 16px 0; }
   .field-label { display: block; font-size: 0.78rem; color: #7c3aed; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-  input[type="text"] {
+  input[type="text"], textarea {
     width: 100%; padding: 12px 14px; border: 2px solid #c084fc; border-radius: 0;
     font-size: 16px; color: #7c3aed; background: #fff; margin-bottom: 16px;
     font-family: 'Nunito', sans-serif; outline: none; -webkit-appearance: none;
   }
-  input[type="text"]::placeholder { font-style: italic; color: #c4b5fd; }
-  input[type="text"]:focus { border-color: #7c3aed; }
+  input[type="text"]::placeholder, textarea::placeholder { font-style: italic; color: #c4b5fd; }
+  input[type="text"]:focus, textarea:focus { border-color: #7c3aed; }
+  textarea { resize: vertical; min-height: 90px; }
+
+  /* Message type toggle */
+  .msg-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-bottom: 14px; border: 2px solid #c084fc; }
+  .msg-toggle-btn { background: #fff; border: none; padding: 10px; font-family: 'Fredoka One', cursive; font-size: 0.85rem; color: #c084fc; cursor: pointer; letter-spacing: 0.5px; transition: all 0.15s; }
+  .msg-toggle-btn.active { background: #7c3aed; color: #fde68a; }
+
   .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-  .action-btn {
-    background: #1a0533; border: 3px solid #ff69b4; color: #fff;
-    font-family: 'Fredoka One', cursive; letter-spacing: 1px; cursor: pointer;
-    box-shadow: 3px 3px 0 #7c3aed; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 6px; padding: 22px 8px;
-    min-height: 110px; -webkit-appearance: none; transition: transform 0.1s, box-shadow 0.1s;
-  }
+  .action-btn { background: #1a0533; border: 3px solid #ff69b4; color: #fff; font-family: 'Fredoka One', cursive; letter-spacing: 1px; cursor: pointer; box-shadow: 3px 3px 0 #7c3aed; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 22px 8px; min-height: 110px; -webkit-appearance: none; transition: transform 0.1s, box-shadow 0.1s; }
   .action-btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 #7c3aed; }
   .action-btn.photo-btn { border-color: #c084fc; box-shadow: 3px 3px 0 #ff69b4; }
   .action-btn.photo-btn:active { box-shadow: 1px 1px 0 #ff69b4; }
@@ -58,6 +51,7 @@
   .action-btn .sub { font-size: 0.7rem; color: #fde68a; letter-spacing: 1px; font-family: 'Nunito', sans-serif; font-style: italic; }
   .action-btn.recording { border-color: #fde68a; animation: pulse-btn 1s infinite; }
   @keyframes pulse-btn { 0%,100% { box-shadow: 3px 3px 0 #7c3aed; } 50% { box-shadow: 3px 3px 12px #ff69b4; } }
+  .optional-label { font-size: 0.68rem; color: #a78bfa; text-transform: uppercase; letter-spacing: 1px; text-align: center; margin-bottom: 8px; }
   .audio-preview { background: #1a0533; border: 2px solid #c084fc; padding: 10px 12px; margin-bottom: 12px; display: none; align-items: center; gap: 10px; }
   .audio-preview audio { flex: 1; min-width: 0; height: 36px; }
   .remove-btn { background: none; border: none; color: #ff69b4; font-size: 1.1rem; cursor: pointer; padding: 6px; flex-shrink: 0; }
@@ -84,6 +78,18 @@
   .hit-counter { display: inline-flex; gap: 2px; background: #1a0533; border: 1px solid #fde68a; padding: 3px 8px; }
   .digit-col { display: inline-flex; flex-direction: column; height: 18px; overflow: hidden; }
   .digit { font-family: monospace; font-size: 13px; color: #fde68a; line-height: 18px; height: 18px; transition: transform 0.15s ease-in-out; }
+
+  /* Modal */
+  .modal-bg { display: none; position: fixed; inset: 0; background: rgba(26,5,51,0.85); z-index: 2000; align-items: center; justify-content: center; padding: 24px; }
+  .modal-bg.open { display: flex; }
+  .modal { background: #fff; border: 4px solid #ff69b4; box-shadow: 6px 6px 0 #c084fc; padding: 24px 20px; max-width: 320px; width: 100%; position: relative; }
+  .modal h3 { font-family: 'Fredoka One', cursive; color: #7c3aed; font-size: 1.2rem; margin-bottom: 10px; }
+  .modal p { font-size: 0.88rem; color: #555; line-height: 1.6; margin-bottom: 8px; }
+  .modal strong { color: #7c3aed; }
+  .modal-close { position: absolute; top: 10px; right: 12px; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #c084fc; line-height: 1; }
+  .modal-dismiss { margin-top: 16px; width: 100%; padding: 12px; background: #7c3aed; color: #fde68a; border: none; font-family: 'Fredoka One', cursive; font-size: 1rem; letter-spacing: 1px; cursor: pointer; }
+
+  /* Party */
   .sparkle-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; }
   .party-msg { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); background: #1a0533; border: 4px solid #ff69b4; box-shadow: 6px 6px 0 #c084fc; padding: 32px 28px; text-align: center; z-index: 1000; width: 88%; max-width: 340px; animation: popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
   @keyframes popIn { from { transform: translate(-50%,-50%) scale(0.5); opacity:0; } to { transform: translate(-50%,-50%) scale(1); opacity:1; } }
@@ -92,6 +98,20 @@
 </style>
 </head>
 <body>
+
+<!-- Mic permission modal -->
+<div class="modal-bg" id="micModal">
+  <div class="modal">
+    <button class="modal-close" id="modalClose">✕</button>
+    <h3>🎙️ Mikrofonåtkomst</h3>
+    <p>Webbläsaren behöver tillstånd att använda mikrofonen.</p>
+    <p><strong>iPhone / Safari:</strong> Tryck på <strong>AA</strong> i adressfältet → Webbplatsinställningar → Mikrofon → Tillåt.</p>
+    <p><strong>Android / Chrome:</strong> Tryck på låsikonen i adressfältet → Behörigheter → Mikrofon → Tillåt.</p>
+    <p>Ladda sedan om sidan och försök igen.</p>
+    <button class="modal-dismiss" id="modalDismiss">OK, fattat ✓</button>
+  </div>
+</div>
+
 <div class="card">
   <div class="card-header">
     <h1>✨ Heja Anna! ✨</h1>
@@ -105,26 +125,47 @@
     <span class="field-label">Ditt namn</span>
     <input type="text" id="nameInput" placeholder="ditt namn..." />
 
-    <div class="action-row">
-      <button class="action-btn" id="recBtn">
-        <span class="icon" id="recIcon">🎙️</span>
-        <span class="lbl" id="recLbl">SPELA IN</span>
-        <span class="sub" id="recSub">tryck för att börja</span>
-        <span class="sub" id="recTimer" style="display:none;color:#ff69b4;font-weight:700;letter-spacing:2px"></span>
-      </button>
-      <button class="action-btn photo-btn" id="photoBtn">
-        <span class="icon" id="photoIcon">📷</span>
-        <span class="lbl">FOTO</span>
+    <!-- Message type toggle -->
+    <div class="msg-toggle">
+      <button class="msg-toggle-btn active" id="toggleAudio">🎙️ Röstmeddelande</button>
+      <button class="msg-toggle-btn" id="toggleText">✍️ Textmeddelande</button>
+    </div>
+
+    <!-- Audio section -->
+    <div id="audioSection">
+      <div class="optional-label">valfritt — men kul!</div>
+      <div class="action-row">
+        <button class="action-btn" id="recBtn">
+          <span class="icon" id="recIcon">🎙️</span>
+          <span class="lbl" id="recLbl">SPELA IN</span>
+          <span class="sub" id="recSub">tryck för att börja</span>
+          <span class="sub" id="recTimer" style="display:none;color:#ff69b4;font-weight:700;letter-spacing:2px"></span>
+        </button>
+        <button class="action-btn photo-btn" id="photoBtn">
+          <span class="icon" id="photoIcon">📷</span>
+          <span class="lbl">FOTO</span>
+          <span class="sub">valfritt</span>
+        </button>
+      </div>
+      <div class="audio-preview" id="audioPreview">
+        <audio id="audioPlayback" controls></audio>
+        <button class="remove-btn" id="removeAudio">✕</button>
+      </div>
+    </div>
+
+    <!-- Text section -->
+    <div id="textSection" style="display:none">
+      <div class="optional-label">skriv ditt meddelande</div>
+      <textarea id="textMessage" placeholder="skriv något fint till anna..."></textarea>
+      <div class="optional-label" style="margin-top:-8px">foto (valfritt)</div>
+      <button class="action-btn photo-btn" id="photoBtnText" style="width:100%;margin-bottom:14px">
+        <span class="icon" id="photoIconText">📷</span>
+        <span class="lbl">LÄGG TILL FOTO</span>
         <span class="sub">valfritt</span>
       </button>
     </div>
+
     <input type="file" id="photoInput" accept="image/*" style="display:none" />
-
-    <div class="audio-preview" id="audioPreview">
-      <audio id="audioPlayback" controls></audio>
-      <button class="remove-btn" id="removeAudio">✕</button>
-    </div>
-
     <div class="photo-preview-wrap" id="photoPreviewWrap">
       <img id="photoPreview" />
       <button class="photo-remove" id="removePhoto">✕</button>
@@ -136,11 +177,12 @@
     <div class="q-block">
       <span class="q-label">Vilket år träffades ni?</span>
       <div class="options">
-        <input class="opt" type="checkbox" id="q1a"><label for="q1a">80-talet</label>
-        <input class="opt" type="checkbox" id="q1b"><label for="q1b">90-talet</label>
-        <input class="opt" type="checkbox" id="q1c"><label for="q1c">00-talet</label>
-        <input class="opt" type="checkbox" id="q1d"><label for="q1d">10-talet</label>
-        <input class="opt" type="checkbox" id="q1e"><label for="q1e">20-talet</label>
+        <input class="opt" type="checkbox" id="q1a"><label for="q1a">70-talet</label>
+        <input class="opt" type="checkbox" id="q1b"><label for="q1b">80-talet</label>
+        <input class="opt" type="checkbox" id="q1c"><label for="q1c">90-talet</label>
+        <input class="opt" type="checkbox" id="q1d"><label for="q1d">00-talet</label>
+        <input class="opt" type="checkbox" id="q1e"><label for="q1e">10-talet</label>
+        <input class="opt" type="checkbox" id="q1f"><label for="q1f">20-talet</label>
       </div>
       <input class="annat-input" id="q1other" placeholder="annat" />
     </div>
@@ -151,6 +193,10 @@
         <input class="opt" type="checkbox" id="q2a"><label for="q2a">En fest</label>
         <input class="opt" type="checkbox" id="q2b"><label for="q2b">Jobbet</label>
         <input class="opt" type="checkbox" id="q2c"><label for="q2c">Skolan</label>
+        <input class="opt" type="checkbox" id="q2d"><label for="q2d">Genom en kompis</label>
+        <input class="opt" type="checkbox" id="q2e"><label for="q2e">Familjen</label>
+        <input class="opt" type="checkbox" id="q2f"><label for="q2f">På nätet</label>
+        <input class="opt" type="checkbox" id="q2g"><label for="q2g">På resa</label>
       </div>
       <input class="annat-input" id="q2other" placeholder="annat" />
     </div>
@@ -162,6 +208,10 @@
         <input class="opt" type="checkbox" id="q3b"><label for="q3b">Bestämd</label>
         <input class="opt" type="checkbox" id="q3c"><label for="q3c">Omtänksam</label>
         <input class="opt" type="checkbox" id="q3d"><label for="q3d">Galen</label>
+        <input class="opt" type="checkbox" id="q3e"><label for="q3e">Energisk</label>
+        <input class="opt" type="checkbox" id="q3f"><label for="q3f">Charmig</label>
+        <input class="opt" type="checkbox" id="q3g"><label for="q3g">Nyfiken</label>
+        <input class="opt" type="checkbox" id="q3h"><label for="q3h">Modig</label>
       </div>
       <input class="annat-input" id="q3other" placeholder="annat" />
     </div>
@@ -173,8 +223,12 @@
         <input class="opt" type="checkbox" id="q3bb"><label for="q3bb">Bestämd</label>
         <input class="opt" type="checkbox" id="q3bc"><label for="q3bc">Omtänksam</label>
         <input class="opt" type="checkbox" id="q3bd"><label for="q3bd">Galen</label>
-        <input class="opt" type="checkbox" id="q3be"><label for="q3be">Vis</label>
-        <input class="opt" type="checkbox" id="q3bf"><label for="q3bf">Oförutsägbar</label>
+        <input class="opt" type="checkbox" id="q3be"><label for="q3be">Energisk</label>
+        <input class="opt" type="checkbox" id="q3bf"><label for="q3bf">Charmig</label>
+        <input class="opt" type="checkbox" id="q3bg"><label for="q3bg">Nyfiken</label>
+        <input class="opt" type="checkbox" id="q3bh"><label for="q3bh">Modig</label>
+        <input class="opt" type="checkbox" id="q3bi"><label for="q3bi">Vis</label>
+        <input class="opt" type="checkbox" id="q3bj"><label for="q3bj">Oförutsägbar</label>
       </div>
       <input class="annat-input" id="q3bother" placeholder="annat" />
     </div>
@@ -186,6 +240,9 @@
         <input class="opt" type="checkbox" id="q4b"><label for="q4b">Startar ett företag</label>
         <input class="opt" type="checkbox" id="q4c"><label for="q4c">Njuter av livet</label>
         <input class="opt" type="checkbox" id="q4d"><label for="q4d">Räddar världen</label>
+        <input class="opt" type="checkbox" id="q4e"><label for="q4e">Skriver en bok</label>
+        <input class="opt" type="checkbox" id="q4f"><label for="q4f">Lever på en ö</label>
+        <input class="opt" type="checkbox" id="q4g"><label for="q4g">Dansar fortfarande</label>
       </div>
       <input class="annat-input" id="q4other" placeholder="annat" />
     </div>
@@ -198,6 +255,8 @@
         <input class="opt" type="checkbox" id="q5c"><label for="q5c">Något galet</label>
         <input class="opt" type="checkbox" id="q5d"><label for="q5d">Bara hänga</label>
         <input class="opt" type="checkbox" id="q5e"><label for="q5e">Ta över världen</label>
+        <input class="opt" type="checkbox" id="q5f"><label for="q5f">Laga mat</label>
+        <input class="opt" type="checkbox" id="q5g"><label for="q5g">Ett nytt äventyr</label>
       </div>
       <input class="annat-input" id="q5other" placeholder="annat" />
     </div>
@@ -215,84 +274,91 @@
   const q = new URLSearchParams(window.location.search).get('q');
 
   // --- Prompts ---
-  const prompts = [
-    'Hur träffades ni första gången?',
-    'Berätta om ett minne du har med Anna',
-    'Beskriv Anna i tre ord',
-    'Vad har Anna lärt dig?',
-    'Vad är det roligaste du har upplevt med Anna?',
-    'Vad önskar du Anna för de nästa 50 åren?',
-  ];
-  for (let i = prompts.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [prompts[i], prompts[j]] = [prompts[j], prompts[i]];
-  }
+  const prompts = ['Hur träffades ni första gången?','Berätta om ett minne du har med Anna','Beskriv Anna i tre ord','Vad har Anna lärt dig?','Vad är det roligaste du har upplevt med Anna?','Vad önskar du Anna för de nästa 50 åren?'];
+  for (let i = prompts.length - 1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [prompts[i],prompts[j]]=[prompts[j],prompts[i]]; }
   let promptIdx = 0;
   const promptEl = document.getElementById('promptText');
   promptEl.textContent = prompts[0];
-  setInterval(() => {
-    promptEl.classList.add('fade');
-    setTimeout(() => {
-      promptIdx = (promptIdx + 1) % prompts.length;
-      promptEl.textContent = prompts[promptIdx];
-      promptEl.classList.remove('fade');
-    }, 500);
-  }, 4000);
+  setInterval(() => { promptEl.classList.add('fade'); setTimeout(() => { promptIdx=(promptIdx+1)%prompts.length; promptEl.textContent=prompts[promptIdx]; promptEl.classList.remove('fade'); }, 500); }, 4000);
 
   // --- State ---
-  let audioBlob = null;
-  let mediaRecorder = null;
-  let audioChunks = [];
-  let timerInterval = null;
-  let seconds = 0;
+  let audioBlob = null, mediaRecorder = null, audioChunks = [], timerInterval = null, seconds = 0;
+  let msgMode = 'audio';
   const MAX_SECONDS = 120;
+  const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4' : '';
 
-  const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-    ? 'audio/webm;codecs=opus'
-    : MediaRecorder.isTypeSupported('audio/mp4')
-      ? 'audio/mp4'
-      : '';
-
-  const recBtn       = document.getElementById('recBtn');
-  const recIcon      = document.getElementById('recIcon');
-  const recLbl       = document.getElementById('recLbl');
-  const recSub       = document.getElementById('recSub');
-  const recTimer     = document.getElementById('recTimer');
-  const audioPreview = document.getElementById('audioPreview');
-  const audioPlayback= document.getElementById('audioPlayback');
-  const removeAudio  = document.getElementById('removeAudio');
-  const photoBtn     = document.getElementById('photoBtn');
-  const photoInput   = document.getElementById('photoInput');
+  const recBtn        = document.getElementById('recBtn');
+  const recIcon       = document.getElementById('recIcon');
+  const recLbl        = document.getElementById('recLbl');
+  const recSub        = document.getElementById('recSub');
+  const recTimer      = document.getElementById('recTimer');
+  const audioPreview  = document.getElementById('audioPreview');
+  const audioPlayback = document.getElementById('audioPlayback');
+  const removeAudio   = document.getElementById('removeAudio');
+  const photoBtn      = document.getElementById('photoBtn');
+  const photoBtnText  = document.getElementById('photoBtnText');
+  const photoInput    = document.getElementById('photoInput');
   const photoPreviewWrap = document.getElementById('photoPreviewWrap');
-  const photoPreview = document.getElementById('photoPreview');
-  const removePhoto  = document.getElementById('removePhoto');
-  const submitBtn    = document.getElementById('submitBtn');
-  const status       = document.getElementById('status');
+  const photoPreview  = document.getElementById('photoPreview');
+  const removePhoto   = document.getElementById('removePhoto');
+  const submitBtn     = document.getElementById('submitBtn');
+  const status        = document.getElementById('status');
+  const micModal      = document.getElementById('micModal');
 
-  function formatTime(s) {
-    return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+  // --- Mic modal ---
+  document.getElementById('modalClose').addEventListener('click', () => micModal.classList.remove('open'));
+  document.getElementById('modalDismiss').addEventListener('click', () => micModal.classList.remove('open'));
+  micModal.addEventListener('click', e => { if (e.target === micModal) micModal.classList.remove('open'); });
+
+  async function checkMicPermission() {
+    if (navigator.permissions) {
+      try {
+        const res = await navigator.permissions.query({ name: 'microphone' });
+        return res.state !== 'denied';
+      } catch { return true; }
+    }
+    return true;
   }
 
-  function stopRecording() {
-    if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
-    clearInterval(timerInterval);
-    timerInterval = null;
-  }
+  // --- Message mode toggle ---
+  document.getElementById('toggleAudio').addEventListener('click', () => {
+    msgMode = 'audio';
+    document.getElementById('toggleAudio').classList.add('active');
+    document.getElementById('toggleText').classList.remove('active');
+    document.getElementById('audioSection').style.display = '';
+    document.getElementById('textSection').style.display = 'none';
+    checkReady();
+  });
+  document.getElementById('toggleText').addEventListener('click', () => {
+    msgMode = 'text';
+    document.getElementById('toggleText').classList.add('active');
+    document.getElementById('toggleAudio').classList.remove('active');
+    document.getElementById('audioSection').style.display = 'none';
+    document.getElementById('textSection').style.display = '';
+    checkReady();
+  });
+  document.getElementById('textMessage').addEventListener('input', checkReady);
+
+  function formatTime(s) { return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; }
+  function stopRecording() { if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop(); clearInterval(timerInterval); timerInterval = null; }
 
   function checkReady() {
     const hasName = document.getElementById('nameInput').value.trim().length > 0;
-    const ready = hasName && audioBlob;
+    let hasMsg = false;
+    if (msgMode === 'audio') hasMsg = true; // audio is optional, name is enough
+    if (msgMode === 'text') hasMsg = document.getElementById('textMessage').value.trim().length > 0;
+    const ready = hasName && hasMsg;
     submitBtn.classList.toggle('ready', ready);
     submitBtn.disabled = !ready;
   }
   document.getElementById('nameInput').addEventListener('input', checkReady);
+  checkReady();
 
   // --- Recording ---
   recBtn.addEventListener('click', async () => {
-    if (mediaRecorder && mediaRecorder.state === 'recording') {
-      stopRecording();
-      return;
-    }
+    if (mediaRecorder && mediaRecorder.state === 'recording') { stopRecording(); return; }
+    const allowed = await checkMicPermission();
+    if (!allowed) { micModal.classList.add('open'); return; }
     recSub.textContent = 'tillstånd krävs — tryck ok';
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -303,76 +369,61 @@
         audioBlob = new Blob(audioChunks, { type: mimeType || 'audio/webm' });
         audioPlayback.src = URL.createObjectURL(audioBlob);
         audioPreview.style.display = 'flex';
-        recIcon.textContent = '🎙️';
-        recLbl.textContent = 'SPELA IN IGEN';
-        recSub.textContent = 'ersätter föregående';
-        recSub.style.display = '';
-        recTimer.style.display = 'none';
-        recBtn.classList.remove('recording');
-        stream.getTracks().forEach(t => t.stop());
-        checkReady();
+        recIcon.textContent = '🎙️'; recLbl.textContent = 'SPELA IN IGEN';
+        recSub.textContent = 'ersätter föregående'; recSub.style.display = '';
+        recTimer.style.display = 'none'; recBtn.classList.remove('recording');
+        stream.getTracks().forEach(t => t.stop()); checkReady();
       };
-      mediaRecorder.start();
-      seconds = 0;
-      recBtn.classList.add('recording');
-      recIcon.textContent = '⏹️';
-      recLbl.textContent = 'STOPPA';
-      recSub.style.display = 'none';
-      recTimer.style.display = '';
+      mediaRecorder.start(); seconds = 0;
+      recBtn.classList.add('recording'); recIcon.textContent = '⏹️'; recLbl.textContent = 'STOPPA';
+      recSub.style.display = 'none'; recTimer.style.display = '';
       recTimer.textContent = `${formatTime(0)} / ${formatTime(MAX_SECONDS)}`;
       timerInterval = setInterval(() => {
         seconds++;
-        const remaining = MAX_SECONDS - seconds;
         recTimer.textContent = `${formatTime(seconds)} / ${formatTime(MAX_SECONDS)}`;
-        if (remaining <= 10) recTimer.style.color = '#e85c50';
+        if (MAX_SECONDS - seconds <= 10) recTimer.style.color = '#e85c50';
         if (seconds >= MAX_SECONDS) stopRecording();
       }, 1000);
     } catch {
-      recSub.style.display = '';
-      recSub.textContent = 'mikrofonåtkomst nekad';
+      micModal.classList.add('open');
+      recSub.style.display = ''; recSub.textContent = 'tryck för att börja';
     }
   });
 
   removeAudio.addEventListener('click', () => {
-    audioBlob = null;
-    audioPlayback.src = '';
-    audioPreview.style.display = 'none';
-    recIcon.textContent = '🎙️';
-    recLbl.textContent = 'SPELA IN';
-    recSub.textContent = 'tryck för att börja';
-    recSub.style.display = '';
-    recTimer.style.display = 'none';
-    recTimer.style.color = '#ff69b4';
-    recBtn.classList.remove('recording');
-    clearInterval(timerInterval);
-    checkReady();
+    audioBlob = null; audioPlayback.src = ''; audioPreview.style.display = 'none';
+    recIcon.textContent = '🎙️'; recLbl.textContent = 'SPELA IN';
+    recSub.textContent = 'tryck för att börja'; recSub.style.display = '';
+    recTimer.style.display = 'none'; recTimer.style.color = '#ff69b4';
+    recBtn.classList.remove('recording'); clearInterval(timerInterval); checkReady();
   });
 
   // --- Photo ---
-  photoBtn.addEventListener('click', () => photoInput.click());
+  function triggerPhoto() { photoInput.click(); }
+  photoBtn.addEventListener('click', triggerPhoto);
+  photoBtnText.addEventListener('click', triggerPhoto);
   photoInput.addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const file = e.target.files[0]; if (!file) return;
     photoPreview.src = URL.createObjectURL(file);
     photoPreviewWrap.style.display = 'block';
     document.getElementById('photoIcon').textContent = '✅';
+    document.getElementById('photoIconText').textContent = '✅';
   });
   removePhoto.addEventListener('click', () => {
-    photoInput.value = '';
-    photoPreview.src = '';
-    photoPreviewWrap.style.display = 'none';
+    photoInput.value = ''; photoPreview.src = ''; photoPreviewWrap.style.display = 'none';
     document.getElementById('photoIcon').textContent = '📷';
+    document.getElementById('photoIconText').textContent = '📷';
   });
 
   // --- Collect answers ---
   function getAnswers() {
     const qs = [
-      { key: 'q1',  ids: ['q1a','q1b','q1c','q1d','q1e'], other: 'q1other' },
-      { key: 'q2',  ids: ['q2a','q2b','q2c'], other: 'q2other' },
-      { key: 'q3',  ids: ['q3a','q3b','q3c','q3d'], other: 'q3other' },
-      { key: 'q3b', ids: ['q3ba','q3bb','q3bc','q3bd','q3be','q3bf'], other: 'q3bother' },
-      { key: 'q4',  ids: ['q4a','q4b','q4c','q4d'], other: 'q4other' },
-      { key: 'q5',  ids: ['q5a','q5b','q5c','q5d','q5e'], other: 'q5other' },
+      { key:'q1', ids:['q1a','q1b','q1c','q1d','q1e','q1f'], other:'q1other' },
+      { key:'q2', ids:['q2a','q2b','q2c','q2d','q2e','q2f','q2g'], other:'q2other' },
+      { key:'q3', ids:['q3a','q3b','q3c','q3d','q3e','q3f','q3g','q3h'], other:'q3other' },
+      { key:'q3b', ids:['q3ba','q3bb','q3bc','q3bd','q3be','q3bf','q3bg','q3bh','q3bi','q3bj'], other:'q3bother' },
+      { key:'q4', ids:['q4a','q4b','q4c','q4d','q4e','q4f','q4g'], other:'q4other' },
+      { key:'q5', ids:['q5a','q5b','q5c','q5d','q5e','q5f','q5g'], other:'q5other' },
     ];
     const result = {};
     qs.forEach(({ key, ids, other }) => {
@@ -386,142 +437,69 @@
 
   // --- Submit ---
   submitBtn.addEventListener('click', async () => {
-    if (!audioBlob) return;
-    submitBtn.disabled = true;
-    submitBtn.classList.remove('ready');
-    status.className = 'status';
-    status.textContent = '⏳ Laddar upp…';
-
+    if (submitBtn.disabled) return;
+    submitBtn.disabled = true; submitBtn.classList.remove('ready');
+    status.className = 'status'; status.textContent = '⏳ Laddar upp…';
     const name = document.getElementById('nameInput').value.trim();
     const photoFile = photoInput.files[0];
-
+    const textMsg = document.getElementById('textMessage').value.trim();
     try {
-      const toBase64 = f => new Promise((res, rej) => {
-        const r = new FileReader();
-        r.onload = () => res(r.result.split(',')[1]);
-        r.onerror = rej;
-        r.readAsDataURL(f);
-      });
-
-      const audioB64 = await toBase64(audioBlob);
+      const toBase64 = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = rej; r.readAsDataURL(f); });
+      const audioB64 = audioBlob ? await toBase64(audioBlob) : null;
       const photoB64 = photoFile ? await toBase64(photoFile) : null;
-      const answers  = getAnswers();
-
+      const answers = getAnswers();
       const res = await fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        redirect: 'follow',
-        body: JSON.stringify({
-          id: submissionId, q,
-          name,
-          audio: audioB64, audioType: mimeType || 'audio/webm',
-          photo: photoB64, photoType: photoFile?.type ?? null,
-          answers,
-        }),
+        method: 'POST', redirect: 'follow',
+        body: JSON.stringify({ id: submissionId, q, name, audio: audioB64, audioType: mimeType || 'audio/webm', photo: photoB64, photoType: photoFile?.type ?? null, textMessage: textMsg || null, answers }),
       });
-
       const json = JSON.parse(await res.text());
       if (json.ok) {
-        status.className = 'status ok';
-        status.textContent = '🎉 Skickat! Tack så mycket!';
+        status.className = 'status ok'; status.textContent = '🎉 Skickat! Tack så mycket!';
         submitBtn.textContent = '✓ SKICKAT';
         document.getElementById('nameInput').disabled = true;
-        document.getElementById('recBtn').disabled = true;
-        document.getElementById('photoBtn').disabled = true;
+        recBtn.disabled = true; photoBtn.disabled = true; photoBtnText.disabled = true;
         document.querySelectorAll('.annat-input, .opt').forEach(el => el.disabled = true);
         launchParty();
       } else throw new Error(json.error);
     } catch {
-      status.className = 'status err';
-      status.textContent = 'Något gick fel. Försök igen.';
-      submitBtn.disabled = false;
-      submitBtn.classList.add('ready');
+      status.className = 'status err'; status.textContent = 'Något gick fel. Försök igen.';
+      submitBtn.disabled = false; submitBtn.classList.add('ready');
     }
   });
 
-  // --- Party sparkle ---
+  // --- Party ---
   function launchParty() {
-    const canvas = document.createElement('canvas');
-    canvas.className = 'sparkle-canvas';
-    document.body.appendChild(canvas);
+    const canvas = document.createElement('canvas'); canvas.className = 'sparkle-canvas'; document.body.appendChild(canvas);
     const ctx = canvas.getContext('2d');
-
-    const msg = document.createElement('div');
-    msg.className = 'party-msg';
+    const msg = document.createElement('div'); msg.className = 'party-msg';
     msg.innerHTML = '<h2>✨ Tack! ✨</h2><p>Nu är du klar —<br>gå och festa med Anna! 🎉</p>';
     document.body.appendChild(msg);
-
-    const W = canvas.width  = window.innerWidth;
-    const H = canvas.height = window.innerHeight;
+    const W = canvas.width = window.innerWidth, H = canvas.height = window.innerHeight;
     const colors = ['#ff69b4','#fde68a','#c084fc','#38bdf8','#fff','#ff9de2'];
     const shapes = ['circle','square','star'];
-    const particles = Array.from({ length: 120 }, () => ({
-      x: Math.random() * W,
-      y: -20 - Math.random() * H * 0.5,
-      r: 4 + Math.random() * 6,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      shape: shapes[Math.floor(Math.random() * shapes.length)],
-      vx: (Math.random() - 0.5) * 3,
-      vy: 2 + Math.random() * 4,
-      rot: Math.random() * Math.PI * 2,
-      rotV: (Math.random() - 0.5) * 0.2,
-      alpha: 1,
-    }));
-
+    const particles = Array.from({ length: 120 }, () => ({ x: Math.random()*W, y: -20-Math.random()*H*0.5, r: 4+Math.random()*6, color: colors[Math.floor(Math.random()*colors.length)], shape: shapes[Math.floor(Math.random()*shapes.length)], vx: (Math.random()-0.5)*3, vy: 2+Math.random()*4, rot: Math.random()*Math.PI*2, rotV: (Math.random()-0.5)*0.2, alpha: 1 }));
     let frame = 0;
     function draw() {
-      ctx.clearRect(0, 0, W, H);
+      ctx.clearRect(0,0,W,H);
       particles.forEach(p => {
-        p.x += p.vx; p.y += p.vy; p.rot += p.rotV;
-        if (frame > 80) p.alpha -= 0.012;
-        ctx.save();
-        ctx.globalAlpha = Math.max(0, p.alpha);
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.rot);
-        ctx.fillStyle = p.color;
-        if (p.shape === 'circle') {
-          ctx.beginPath(); ctx.arc(0, 0, p.r, 0, Math.PI * 2); ctx.fill();
-        } else if (p.shape === 'square') {
-          ctx.fillRect(-p.r, -p.r, p.r * 2, p.r * 2);
-        } else {
-          ctx.beginPath();
-          for (let i = 0; i < 10; i++) {
-            const a = (Math.PI / 5) * i - Math.PI / 2;
-            const rr = i % 2 === 0 ? p.r * 1.4 : p.r * 0.5;
-            i === 0 ? ctx.moveTo(rr * Math.cos(a), rr * Math.sin(a)) : ctx.lineTo(rr * Math.cos(a), rr * Math.sin(a));
-          }
-          ctx.closePath(); ctx.fill();
-        }
+        p.x+=p.vx; p.y+=p.vy; p.rot+=p.rotV; if (frame>80) p.alpha-=0.012;
+        ctx.save(); ctx.globalAlpha=Math.max(0,p.alpha); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.fillStyle=p.color;
+        if (p.shape==='circle') { ctx.beginPath(); ctx.arc(0,0,p.r,0,Math.PI*2); ctx.fill(); }
+        else if (p.shape==='square') { ctx.fillRect(-p.r,-p.r,p.r*2,p.r*2); }
+        else { ctx.beginPath(); for (let i=0;i<10;i++) { const a=(Math.PI/5)*i-Math.PI/2, rr=i%2===0?p.r*1.4:p.r*0.5; i===0?ctx.moveTo(rr*Math.cos(a),rr*Math.sin(a)):ctx.lineTo(rr*Math.cos(a),rr*Math.sin(a)); } ctx.closePath(); ctx.fill(); }
         ctx.restore();
       });
-      frame++;
-      if (frame < 160) requestAnimationFrame(draw);
-      else canvas.remove();
+      frame++; if (frame<160) requestAnimationFrame(draw); else canvas.remove();
     }
     draw();
   }
 
   // --- Hit counter ---
-  const NUM_DIGITS = 7;
-  const counterEl = document.getElementById('counter');
-  const cols = [];
-  for (let i = 0; i < NUM_DIGITS; i++) {
-    const col = document.createElement('span'); col.className = 'digit-col';
-    const d = document.createElement('span'); d.className = 'digit'; d.textContent = Math.floor(Math.random() * 10);
-    col.appendChild(d); counterEl.appendChild(col); cols.push({ col, d });
-  }
-  function rollDigit(c) {
-    const next = Math.floor(Math.random() * 10);
-    const x = document.createElement('span'); x.className = 'digit'; x.textContent = next;
-    c.col.appendChild(x);
-    c.d.style.transform = 'translateY(-18px)'; x.style.transform = 'translateY(-18px)';
-    setTimeout(() => { c.col.removeChild(c.d); x.style.transform = ''; c.d = x; }, 160);
-  }
-  function tick() {
-    const n = Math.floor(Math.random() * 3) + 1;
-    [...Array(NUM_DIGITS).keys()].sort(() => Math.random() - .5).slice(0, n).forEach(i => rollDigit(cols[i]));
-    setTimeout(tick, 300 + Math.random() * 700);
-  }
-  setTimeout(tick, 800);
+  const NUM_DIGITS=7, counterEl=document.getElementById('counter'), cols=[];
+  for (let i=0;i<NUM_DIGITS;i++) { const col=document.createElement('span'); col.className='digit-col'; const d=document.createElement('span'); d.className='digit'; d.textContent=Math.floor(Math.random()*10); col.appendChild(d); counterEl.appendChild(col); cols.push({col,d}); }
+  function rollDigit(c) { const next=Math.floor(Math.random()*10), x=document.createElement('span'); x.className='digit'; x.textContent=next; c.col.appendChild(x); c.d.style.transform='translateY(-18px)'; x.style.transform='translateY(-18px)'; setTimeout(()=>{ c.col.removeChild(c.d); x.style.transform=''; c.d=x; },160); }
+  function tick() { const n=Math.floor(Math.random()*3)+1; [...Array(NUM_DIGITS).keys()].sort(()=>Math.random()-.5).slice(0,n).forEach(i=>rollDigit(cols[i])); setTimeout(tick,300+Math.random()*700); }
+  setTimeout(tick,800);
 </script>
 </body>
 </html>
